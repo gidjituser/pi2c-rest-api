@@ -1,0 +1,1055 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: PI2c
+  license:
+    name: GPLv3
+servers:
+  - url: http://GO-XXXXXXX/api/v1
+paths:
+  /api/v1/version:
+    get:
+      summary: Get the device firmware version
+      operationId: getVersion
+      tags:
+        - version
+      responses:
+        '200':
+          description: Object with version property with firmware string value
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - version
+                properties:
+                  version:
+                    type: string
+  /api/v1/general:
+    get:
+      summary: Get general settings of the device
+      operationId: getGeneralSettings
+      tags:
+        - settings
+      responses:
+        '200':
+          description: Response is an object with keys 'name', 'password', 'webURL'.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GeneralSettings"
+    post:
+      summary: >
+        Update the General settings of the PI2c device.
+        Existing values are used for properties not sent.
+      operationId: setGeneralSettings
+      tags:
+        - settings
+      requestBody:
+        description: An object of optional settings properties to set
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GeneralSettings'
+      responses:
+        '200':
+          description: Object with success of storing the instructions set
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    $ref: "#/components/schemas/Error"
+
+        default:
+          description: Invalid packet, credentials, or some unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /api/v1/instr/exec:
+    post:
+      summary: >
+        Run instructions. All of the instructions can be found in schemas below.
+      operationId: completeInstructionTransfer
+      tags:
+        - instruction
+      requestBody:
+        description: An array of instructions to complete
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Instructions'
+      responses:
+        '200':
+          description: Response object with stats and success of instructions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InstructionsResponse"
+        default:
+          description: Invalid packet, credentials, or some unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /api/v1/instr/stored:
+    get:
+      summary: Get names of all stored instruction sets
+      operationId: storedInstructionNames
+      tags:
+        - storedInstructions
+      responses:
+        '200':
+          description: Successfully retreived a list of stored instruction set names
+          content:
+            application/json:
+              schema:
+                type: array
+                description: Array of names of each instruction set
+                items:
+                  type: string
+
+        default:
+          description: Invalid packet, credentials, or some unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /api/v1/instr/stored/{InstructionSetName}:
+    get:
+      summary: Get instructions for given set name
+      parameters:
+        - in: path
+          name: InstructionSetName
+          schema:
+            type: string
+          required: true
+          description: >
+            Name of stored instruction set to retreive.
+      operationId: storedInstructionsForName
+      tags:
+        - storedInstructions
+      responses:
+        '200':
+          description: A List of instructions that are stored for requested name
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Instructions"
+        default:
+          description: Invalid packet, credentials, or some unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: >
+        Store instructions. This is useful so that you can later execute a
+        sequence of instructions with a simple name.
+      parameters:
+        - in: path
+          name: InstructionSetName
+          schema:
+            type: string
+          required: true
+          description: >
+            Name of stored instruction set to store/save. When successfully
+            added the special set with name 'initialize' will
+            automatically be run every time the device starts up.
+      operationId: saveStoredInstructionsWithName
+      tags:
+        - storedInstructions
+      requestBody:
+        description: An array of instructions to save.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Instructions'
+      responses:
+        '200':
+          description: Object with success of storing the instructions set
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    $ref: "#/components/schemas/Error"
+
+        default:
+          description: Invalid packet, credentials, or some unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /api/v1/instr/stored/{InstructionSetName}/exec:
+    post:
+      summary: Execute named instruction set
+      parameters:
+        - in: path
+          name: InstructionSetName
+          schema:
+            type: string
+          required: true
+          description: >
+            Name of stored instruction set to execute
+      operationId: execStoredInstructionsWithName
+      tags:
+        - storedInstructions
+      responses:
+        '200':
+          description: Response object with stats and success of each instruction
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InstructionsResponse"
+        default:
+          description: Invalid packet, credentials, or some unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /api/v1/instr/stored/{InstructionSetName}/log:
+    get:
+      summary: Get latest response for instruction set with given name when it last executed
+      parameters:
+        - in: path
+          name: InstructionSetName
+          schema:
+            type: string
+          required: true
+          description: Name of stored instruction set's response log to retreive
+      operationId: storedInstructionsResponseLogForName
+      tags:
+        - storedInstructions
+      responses:
+        '200':
+          description: Object Response per each instruction
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - hasLog
+                properties:
+                  hasLog:
+                    description: >
+                      Has this stored instruction set executed. If so, the log
+                      key will be present with the response of the last execution.
+                    type: boolean
+                  log:
+                    $ref: "#/components/schemas/InstructionsResponse"
+                  error:
+                    $ref: "#/components/schemas/Error"
+        default:
+          description: Invalid packet, credentials, or some unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+tags:
+  - name: instruction
+    description: execute a function
+components:
+  schemas:
+    GeneralSettings:
+      title: PI2c General Settings
+      description: Store the name, password, and webURL for the device
+      type: object
+      properties:
+        name:
+          type: string
+          description: a user defined name for the device
+          minLength: 1
+          maxLength: 33
+        password:
+          type: string
+          description: a REST API password for Basic access authentication where the username is ignored
+          minLength: 5
+          maxLength: 33
+        webURL:
+          type: string
+          description: (advanced) a user defined URL serving custom HTML/JS to control the PI2c
+          minLength: 5
+          maxLength: 512
+    PinResetType:
+      title: Pin reset type
+      description: How the pin is to be reset
+      type: string
+      enum:
+        - PIN_RESET # make the pin an input erasing current state
+        - PIN_PRESERVE # keep current state
+    PollPinDirection:
+      title: Poll Pin direction
+      description: Check falling or rising edge or both when polling
+      type: string
+      enum:
+        - POLL_LOW  # poll for falling edge transitions to low
+        - POLL_HIGH # poll for rising edge transitions to high
+        - POLL_BOTH # poll for both transitions (default)
+    Pin:
+      title: Pin
+      description: GPIO Pin number
+      type: number
+      enum:
+        - 1
+        - 3
+        - 5
+        - 7
+        - 8
+        - 9
+        - 12
+        - 13
+        - 14
+        - 15
+        - 16
+        - 17
+        - 18
+    PinMode:
+      title: Pin Mode
+      description: Set whether GPIO Pin is input, output, or pwm if capable
+      type: string
+      enum:
+        - INPUT
+        - OUTPUT
+        - PWM
+    PinInputModePullup:
+      title: Pullup
+      description: Pin Pullup in input mode
+      type: string
+      enum:
+        - PULL_UP
+        - PULL_DOWN
+        - PULL_OFF
+    PinOutputModeValue:
+      title: Pin Value
+      description: Pin string value in output mode
+      type: string
+      enum:
+        - HIGH
+        - LOW
+    PinOutputNumModeValue:
+      title: Pin Numerical Value
+      description: Pin numerical value in output mode
+      type: number
+      enum:
+        - 1
+        - 0
+    led:
+      title: led
+      description: Control the red or green led on the device
+      type: object
+      required:
+        - func
+        - arg1
+        - arg2
+      properties:
+        func:
+          description: Instruction function name
+          type: string
+          enum:
+            - led
+        arg1:
+          description: >
+            Which led (red or green). Note on startup when device is ready,
+            red led will turn on for a second.
+          type: string
+          enum:
+            - red
+            - green
+        arg2:
+          oneOf:
+            - $ref: "#/components/schemas/PinOutputModeValue"
+            - $ref: "#/components/schemas/PinOutputNumModeValue"
+    open:
+      title: open
+      description: Open Pin for Input/Output
+      type: object
+      required:
+        - func
+        - arg1
+        - arg2
+      properties:
+        func:
+          description: Instruction function name
+          type: string
+          enum:
+            - open
+        arg1:
+          description: For pwm pins 16 or 18 only
+          allOf:
+            - $ref: "#/components/schemas/Pin"
+        arg2:
+          allOf:
+            - $ref: "#/components/schemas/PinMode"
+        arg3:
+          oneOf:
+            - $ref: "#/components/schemas/PinInputModePullup"
+            - $ref: "#/components/schemas/PinOutputModeValue"
+    stored:
+      title: stored
+      description: Run stored instruction set with arg1 name
+      type: object
+      required:
+        - func
+        - arg1
+      properties:
+        func:
+          description: Instruction function name
+          type: string
+          enum:
+            - stored
+        arg1:
+          description: Name of stored instruction set to execute
+          type: string
+    mode:
+      title: mode
+      description: Set Pin Input/Output
+      type: object
+      required:
+        - func
+        - arg1
+        - arg2
+      properties:
+        func:
+          description: Instruction function name
+          type: string
+          enum:
+            - mode
+        arg1:
+          allOf:
+            - $ref: "#/components/schemas/Pin"
+        arg2:
+          allOf:
+            - $ref: "#/components/schemas/PinMode"
+    read:
+      title: read
+      description: Read GPIO at Pin - InstructionResponse returnValue number 0|1
+      type: object
+      required:
+        - func
+        - arg1
+      properties:
+        func:
+          description: Instruction function name
+          type: string
+          enum:
+            - read
+        arg1:
+          allOf:
+            - $ref: "#/components/schemas/Pin"
+    readBuf:
+      title: readBuf
+      description: >
+        Read length bits as fast as possible into Buffer at Pin.
+        Data returned in response value as base64 string where each byte is 0 or 1
+        representing a bit.
+      type: object
+      required:
+        - func
+        - arg1
+        - arg2
+      properties:
+        func:
+          description: Instruction function name
+          type: string
+          enum:
+            - readBuf
+        arg1:
+          allOf:
+            - $ref: "#/components/schemas/Pin"
+        arg2:
+          type: integer
+          format: int32
+          description: Number of bits to read
+          minimum: 1
+          maximum: 10000
+    write:
+      title: write
+      description: Write GPIO at Pin
+      type: object
+      required:
+        - func
+        - arg1
+        - arg2
+      properties:
+        func:
+          description: Instruction function name
+          type: string
+          enum:
+            - write
+        arg1:
+          allOf:
+            - $ref: "#/components/schemas/Pin"
+        arg2:
+          description: set the output of the pin using string or number types
+          oneOf:
+            - $ref: "#/components/schemas/PinOutputModeValue"
+            - $ref: "#/components/schemas/PinOutputNumModeValue"
+    writeBuf:
+      title: writeBuf
+      description: Write length bits as fast as possible Buffer to Pin
+      type: object
+      required:
+        - func
+        - arg1
+        - arg2
+      properties:
+        func:
+          description: Instruction function name
+          type: string
+          enum:
+            - writeBuf
+        arg1:
+          allOf:
+            - $ref: "#/components/schemas/Pin"
+        arg2:
+          type: string
+          format: byte
+          description: base64 encoded data to be written. Each byte should be 1 or 0 to represent a bit
+          minimum: 1
+          maximum: 10000
+    pud:
+      title: pud
+      description: Set Pin Pullup state
+      type: object
+      required:
+        - func
+        - arg1
+        - arg2
+      properties:
+        func:
+          description: Instruction function name
+          type: string
+          enum:
+            - pud
+        arg1:
+          allOf:
+            - $ref: "#/components/schemas/Pin"
+        arg2:
+          allOf:
+            - $ref: "#/components/schemas/PinInputModePullup"
+    pwmSetClockDivider:
+      title: pwmSetClockDivider
+      description: >
+        Set the PWM refresh rate.
+      type: object
+      required:
+        - func
+        - arg1
+      properties:
+        func:
+          description: Instruction function name
+          type: string
+          enum:
+            - pwmSetClockDivider
+        arg1:
+          description: |
+            This is a power-of-two divisor of the base 19.2MHz rate, with a maximum value of 4096 (4.6875kHz).
+          type: number
+          maximum: 4096
+          minimum: 1
+    pwmSetRange:
+      title: pwmSetRange
+      description: This determines the maximum pulse width
+      type: object
+      required:
+        - func
+        - arg1
+        - arg2
+      properties:
+        func:
+          description: Instruction function name
+          type: string
+          enum:
+            - pwmSetRange
+        arg1:
+          type: number
+          enum:
+            - 16
+            - 18
+        arg2:
+          description: set range
+          type: number
+          maximum: 4096
+          minimum: 1
+    pwmSetData:
+      title: pwmSetData
+      description: Set the pwm width
+      type: object
+      required:
+        - func
+        - arg1
+        - arg2
+      properties:
+        func:
+          description: Instruction function name
+          type: string
+          enum:
+            - pwmSetData
+        arg1:
+          type: number
+          enum:
+            - 16
+            - 18
+        arg2:
+          description: set data
+          type: number
+          maximum: 4096
+          minimum: 1
+    i2cBegin:
+      title: i2cBegin
+      description: >
+        Start using i2c. Pins 1 and 3 will be configured accordingly.
+        (1 - SCL, 3 - SDA)
+      type: object
+      required:
+        - func
+      properties:
+        func:
+          description: Assign GPIO pins 1 and 3 to use i2c
+          type: string
+          enum:
+            - i2cBegin
+    i2cSetSlaveAddress:
+      title: i2cSetSlaveAddress
+      description: Set the slave address for further i2c operations
+      type: object
+      required:
+        - func
+        - arg1
+      properties:
+        func:
+          description: Instruction function name
+          type: string
+          enum:
+            - i2cSetSlaveAddress
+        arg1:
+          description: Configure the slave address. This is between 0 - 0x7f
+          type: number
+          maximum: 0x7F
+          minimum: 0
+    i2cSetBaudRate:
+      title: i2cSetBaudRate
+      description: Set the i2c baudrate
+      type: object
+      required:
+        - func
+        - arg1
+      properties:
+        func:
+          description: Instruction function name
+          type: string
+          enum:
+            - i2cSetBaudRate
+        arg1:
+          description: The i2c baudrate
+          type: number
+          maximum: 400000
+          minimum: 1000
+    i2cRead:
+      title: i2cRead
+      description: Perform i2c read and put data in responses returnValue field as base64
+      type: object
+      required:
+        - func
+        - arg1
+      properties:
+        func:
+          description: Instruction function name
+          type: string
+          enum:
+            - i2cRead
+        arg1:
+          description: Number of bytes to read
+          type: number
+          maximum: 64000
+          minimum: 1
+    i2cWrite:
+      title: i2cWrite
+      description: Write to an i2c slave
+      type: object
+      required:
+        - func
+        - arg1
+      properties:
+        func:
+          description: Instruction function name
+          type: string
+          enum:
+            - i2cWrite
+        arg1:
+          description: base64 representation of bytes to write
+          type: string
+          format: byte
+          minLength: 1
+          maxLength: 85333
+    i2cUpdateReg:
+      title: i2cUpdateReg
+      description: >
+        Updates the value of a set of bits to a n-byte internal
+        register of an I2C device. Number of bytes passed to register
+        argument determines size of register (limit 4). The number of
+        bytes passed to the mask dictates how many bytes are updated
+        (limit 8). new_value = (old_value & ~mask) | (value & mask);
+      type: object
+      required:
+        - func
+        - arg1
+        - arg2
+        - arg3
+      properties:
+        func:
+          description: Instruction function name
+          type: string
+          enum:
+            - i2cUpdateReg
+        arg1:
+          description: n-byte register value
+          type: string
+          format: byte
+          minLength: 0
+          maxLength: 4
+        arg2:
+          description: Mask - to 4 byte mask value base64. Num bytes should be equal to value
+          #example: 'AAD/AA==' // 4 bytes [0x0, 0x0, 0xFF, 0x0]
+          type: string
+          format: byte
+          minLength: 0
+          maxLength: 8
+        arg3:
+          description: Value - up to 4 byte data value base64. Num bytes should be equal to mask
+          #example: 'AAD/AA==' // 4 bytes [0x0, 0x0, 0xFF, 0x0]
+          type: string
+          format: byte
+          minLength: 0
+          maxLength: 8
+    i2cEnd:
+      title: i2cEnd
+      description: Turn off the i²c interface and return the pins 1 and 3 to GPIO
+      type: object
+      required:
+        - func
+      properties:
+        func:
+          description: Instruction function name
+          type: string
+          enum:
+            - i2cEnd
+    spiBegin:
+      title: spiBegin
+      description: >
+        Switch Pins 5,7,8,9 to SPI mode.
+        (5 - MISO, 7 - SCLK, 8 - MOSI, 9 - SS)
+      type: object
+      required:
+        - func
+      properties:
+        func:
+          description: Instruction function name
+          type: string
+          enum:
+            - spiBegin
+    spiSetCSPolarity:
+      title: spiSetCSPolarity
+      description: |
+        (CE) pins are typically active low, and this is the default.
+        If your device's CE pin is active high, use this to change the polarity
+      type: object
+      required:
+        - func
+        - arg1
+      properties:
+        func:
+          description: Instruction function name
+          type: string
+          enum:
+            - spiSetCSPolarity
+        arg1:
+          type: string
+          enum:
+            - HIGH
+
+    spiSetClockDivider:
+      title: spiSetClockDivider
+      description: |
+        Set the SPI clock speed with spiSetClockDivider(div).
+      type: object
+      example: { "func": "spiSetClockDivider", "arg1": 128 }
+      required:
+        - func
+        - arg1
+      properties:
+        func:
+          description: Instruction function name
+          type: string
+          enum:
+            - spiSetClockDivider
+        arg1:
+          description: Even divisor of the base 250MHz rate ranging between 0 and 65536. If div is 128 set SPI speed to 1.95MHz
+          type: number
+          format: int32
+          minimum: 0
+          maximum: 65536
+    spiSetDataMode:
+      title: spiSetDataMode
+      description: 0=CPOL(0)CPHA(0),1=CPOL(0)CPHA(1),2=CPOL(1)CPHA(0),3=CPOL(1)CPHA(1)
+      type: object
+      required:
+        - func
+        - arg1
+      properties:
+        func:
+          description: Instruction function name
+          type: string
+          enum:
+            - spiSetDataMode
+        arg1:
+          description: 0=CPOL(0)CPHA(0),1=CPOL(0)CPHA(1),2=CPOL(1)CPHA(0),3=CPOL(1)CPHA(1)
+          type: number
+          enum:
+            - 0
+            - 1
+            - 3
+    spiTransfer:
+      title: spiTransfer
+      description: >
+        Data is sent and received in 8-bit chunks in a packet that should be converted to a base64 string.
+        Data read from the transfer will be placed in the response returnValue as a base64 string of the same size.
+        Max number of bytes to transfer are 64000 before base64 conversion
+      type: object
+      required:
+        - func
+        - arg1
+      properties:
+        func:
+          description: Instruction function name
+          type: string
+          enum:
+            - spiTransfer
+        arg1:
+          description: base64 representation of bytes to write
+          type: string
+          format: byte
+    spiWrite:
+      title: spiWrite
+      description: >
+        Write data only. Max number of bytes to write is 64000 before base64 conversion
+      type: object
+      required:
+        - func
+        - arg1
+      properties:
+        func:
+          description: Instruction function name
+          type: string
+          enum:
+            - spiWrite
+        arg1:
+          description: base64 representation of bytes to write
+          type: string
+          format: byte
+          minLength: 1
+          maxLength: 85333
+    spiEnd:
+      title: spiEnd
+      description: Put pins back to general purpose
+      type: object
+      required:
+        - func
+      properties:
+        func:
+          description: Instruction function name
+          type: string
+          enum:
+            - spiEnd
+    sleep:
+      title: sleep
+      description: Delay further execution for n seconds
+      type: object
+      required:
+        - func
+        - arg1
+        - arg2
+      properties:
+        func:
+          description: Instruction function name
+          type: string
+          enum:
+            - sleep
+        arg1:
+          description: number of seconds to sleep
+          type: number
+          format: int32
+          minimum: 1
+          maximum: 5
+    msleep:
+      title: msleep
+      description: Delay further execution for n milliseconds
+      type: object
+      required:
+        - func
+        - arg1
+        - arg2
+      properties:
+        func:
+          description: Instruction function name
+          type: string
+          enum:
+            - msleep
+        arg1:
+          description: Number of milliseconds to sleep
+          type: number
+          format: int32
+          minimum: 1
+          maximum: 5000
+    usleep:
+      title: usleep
+      description: Delay further execution for n microseconds
+      type: object
+      required:
+        - func
+        - arg1
+        - arg2
+      properties:
+        func:
+          description: Instruction function name
+          type: string
+          enum:
+            - usleep
+        arg1:
+          description: Number of microseconds to sleep
+          type: number
+          format: int32
+          minimum: 100
+          maximum: 5000000
+    Instructions:
+      title: Instructions
+      description: |
+        Array of instructions.
+        Each instruction is an object with a key, 'func'
+        whose value is the name of the function. It also may contain keys
+        'arg1', 'arg2', 'arg3' and associated values corresponding to arguments for the function.
+      type: array
+      x-description: none
+      minItems: 1
+      maxItems: 100
+      items:
+        oneOf:
+          - $ref: "#/components/schemas/open"
+          - $ref: "#/components/schemas/mode"
+          - $ref: "#/components/schemas/read"
+          - $ref: "#/components/schemas/readBuf"
+          - $ref: "#/components/schemas/write"
+          - $ref: "#/components/schemas/writeBuf"
+          - $ref: "#/components/schemas/pud"
+          - $ref: "#/components/schemas/pwmSetClockDivider"
+          - $ref: "#/components/schemas/pwmSetRange"
+          - $ref: "#/components/schemas/pwmSetData"
+          - $ref: "#/components/schemas/i2cBegin"
+          - $ref: "#/components/schemas/i2cSetSlaveAddress"
+          - $ref: "#/components/schemas/i2cSetBaudRate"
+          - $ref: "#/components/schemas/i2cRead"
+          - $ref: "#/components/schemas/i2cWrite"
+          - $ref: "#/components/schemas/i2cEnd"
+          - $ref: "#/components/schemas/i2cUpdateReg"
+          - $ref: "#/components/schemas/spiBegin"
+          - $ref: "#/components/schemas/spiSetCSPolarity"
+          - $ref: "#/components/schemas/spiSetClockDivider"
+          - $ref: "#/components/schemas/spiSetDataMode"
+          - $ref: "#/components/schemas/spiTransfer"
+          - $ref: "#/components/schemas/spiWrite"
+          - $ref: "#/components/schemas/spiEnd"
+          - $ref: "#/components/schemas/sleep"
+          - $ref: "#/components/schemas/msleep"
+          - $ref: "#/components/schemas/usleep"
+    InstructionResponse:
+      title: Instruction Response
+      description: >
+        Object containing success status and possible returned data of an executed instruction.
+        Returned data will be the value of key 'returnValue' and be one of multiple types
+        depending on the instruction that was executed.
+      type: object
+      example: { "success": true, "index": 0, "returnValue": "AAE=" }
+      required:
+        - success
+        - index
+      properties:
+        success:
+          description: Instruction succeeded or not
+          type: boolean
+        index:
+          description: Array index from requested Instructions array
+          type: integer
+          minimum: 0
+          maximum: 99
+        returnValue:
+          description: >
+            If instruction retrieved data, this will contain one of data of types listed below
+            based on the output type specified by the instruction. For example a base64 string
+            representing a buffer of 8-bit data, a utf-8 string, or a number.
+          oneOf:
+            - type: string
+              description: return value is a string
+            - type: number
+              description: return value is a number
+        error:
+          type: string
+          description: Message possibly describing why instruction failed to execute
+    InstructionsResponse:
+      title: Instructions Response
+      description: >
+        Object describing success and information of Instructions execution. It also contains an instructions
+        key whose value is every instructions success status and returned data if applicapable. When a stored
+        instruction set is executed the latest response object will be stored in it's corresponding log.
+      type: object
+      required:
+        - success
+        - beginTime
+        - completeTime
+        - instructions
+      properties:
+        success:
+          description: All of the instructions succeeded or false if any failed or did not execute
+          type: boolean
+        beginTime:
+          description: Date and time of when set began to execute
+          type: string
+          format: date-time
+        completeTime:
+          description: Date and time of when set finished executing
+          type: string
+          format: date-time
+        instructions:
+          type: array
+          minItems: 1
+          maxItems: 100
+          items:
+            $ref: "#/components/schemas/InstructionResponse"
+    Error:
+      title: Error
+      description: Common Error object among all requests
+      required:
+        - code
+        - message
+      properties:
+        code:
+          description: Number to identify the error for tracking purposes
+          type: integer
+          format: int32
+        message:
+          description: Information describing what caused the error
+          type: string

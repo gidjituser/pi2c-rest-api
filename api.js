@@ -1,0 +1,40 @@
+rpio.prototype.init = function(opts)
+rpio.prototype.open = function(pin, mode, init)
+rpio.prototype.mode = function(pin, mode)
+rpio.prototype.read = function(pin)
+rpio.prototype.readbuf = function(pin, buf, len)
+rpio.prototype.write = function(pin, value)
+rpio.prototype.writebuf = function(pin, buf, len)
+//X rpio.prototype.readpad = function(group)
+//X rpio.prototype.writepad = function(group, control)
+rpio.prototype.pud = function(pin, state)
+//rpio.prototype.poll = function(pin, cb, direction)
+//rpio.prototype.close = function(pin, reset)
+
+rpio.prototype.pwmSetClockDivider = function(divider)
+rpio.prototype.pwmSetRange = function(pin, range)
+rpio.prototype.pwmSetData = function(pin, data)
+
+rpio.prototype.i2cBegin = function()
+rpio.prototype.i2cSetSlaveAddress = function(addr)
+rpio.prototype.i2cSetClockDivider = function(divider)
+rpio.prototype.i2cSetBaudRate = function(baud)
+rpio.prototype.i2cRead = function(buf, len)
+rpio.prototype.i2cWrite = function(buf, len)
+rpio.prototype.i2cEnd = function()
+
+rpio.prototype.spiBegin = function()
+rpio.prototype.spiChipSelect = function(cs)
+rpio.prototype.spiSetCSPolarity = function(cs, active)
+rpio.prototype.spiSetClockDivider = function(divider)
+rpio.prototype.spiSetDataMode = function(mode)
+rpio.prototype.spiTransfer = function(txbuf, rxbuf, len)
+rpio.prototype.spiWrite = function(buf, len)
+rpio.prototype.spiEnd = function()
+
+rpio.prototype.sleep = function(secs)
+rpio.prototype.msleep = function(msecs)
+rpio.prototype.usleep = function(usecs)
+
+
+//maybe add full reset path where reset end all ex. spiEnd, i2cEnd, close

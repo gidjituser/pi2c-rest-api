@@ -1,0 +1,61 @@
+{
+  "name": "pi2c-rest-api",
+  "version": "0.10.14",
+  "main": "release/index.js",
+  "entry": "release/index.js",
+  "bin": {"pi2c-rest-api": "./release/index.js"},
+  "license": "MIT",
+  "scripts": {
+    "debug": "DB_PATH=/tmp/db DEBUG=\"*\" node build/index.js",
+    "test": "jest",
+    "flow": "flow",
+    "gulp": "gulp",
+    "gulp-release": "gulp && rm -rf release && mv build release",
+    "markdown": "og -t templates -o /tmp openapi.yml markdown"
+  },
+  "files": [
+    "/release",
+    "openapi.yml"
+  ],
+  "jest": {
+    "transform": {
+      ".*": "<rootDir>/node_modules/babel-jest"
+    }
+  },
+  "dependencies": {
+    "basic-auth": "^2.0.1",
+    "body-parser": "1.19.0",
+    "core-js": "^3.1.2",
+    "cors": "^2.8.5",
+    "debug": "^4.1.1",
+    "express": "4.17.0",
+    "is-base64": "0.1.0",
+    "mkdirp": "^0.5.1",
+    "morgan": "1.9.1",
+    "node-fetch": "^2.6.0",
+    "pouchdb": "^7.0.0",
+    "rpio": "^1.0.13",
+    "tsscmp": "^1.0.6",
+    "winston": "^3.2.1",
+    "winston-daily-rotate-file": "^3.9.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.4.5",
+    "@babel/plugin-proposal-class-properties": "^7.4.4",
+    "@babel/plugin-transform-async-to-generator": "^7.4.4",
+    "@babel/plugin-transform-flow-strip-types": "^7.4.4",
+    "@babel/preset-env": "^7.4.5",
+    "@babel/preset-flow": "^7.0.0",
+    "flow-bin": "^0.98.1",
+    "flow-typed": "^2.5.2",
+    "gulp": "^4.0.2",
+    "gulp-babel": "^8.0.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-flowtype": "1.0.0",
+    "gulp-sourcemaps": "2.6.5",
+    "jest": "24.8.0",
+    "openapi3-generator": "^0.12.0",
+    "supertest": "4.0.2",
+    "supertest-as-promised": "4.0.2"
+  }
+}

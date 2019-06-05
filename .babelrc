@@ -1,0 +1,16 @@
+{
+  "presets": [
+          [
+            "@babel/preset-env",
+              {
+                "useBuiltIns": "entry",
+                "corejs": "3",
+                "targets": {
+                  "node": "current"
+                }
+              }
+          ],
+     "@babel/preset-flow"
+    ],
+  "plugins": ["@babel/plugin-transform-async-to-generator", "@babel/plugin-proposal-class-properties", "@babel/plugin-transform-flow-strip-types"]
+}
