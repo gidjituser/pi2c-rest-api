@@ -24,7 +24,7 @@ LABEL app="pi2c rest api"
 LABEL description="rest i2c, spi, gpio instruction api"
 
 ENV DBUS_SYSTEM_BUS_ADDRESS=unix:path=/host/run/dbus/system_bus_socket
-ENV APP_VERSION '0.12.6'
+ENV APP_VERSION '0.12.8'
 ENV REST_PORT 80
 ENV DB_PATH '/data/db'
 
