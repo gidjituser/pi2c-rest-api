@@ -1,19 +1,20 @@
-# PI2c - Rest Server
+# PI2c - REST Server
 
 This application allows you to control the i2c, spi, and gpio your PI over a simple REST API.
 
-- [PI2c - Rest Server](#pi2c---rest-server)
+- [PI2c - REST Server](#pi2c---rest-server)
   - [General Info](#general-info)
-    - [Example](#example)
-    - [Pinout & Wiring](#pinout--wiring)
+  - [Example](#example)
+  - [Pinout & Wiring](#pinout--wiring)
     - [Saving named instruction sets](#saving-named-instruction-sets)
+  - [Installing and Running](#installing-and-running)
 
 ## General Info
 
 PI2c is a ready to use linux image for a Raspberry Pi that enables it to act as a bridge between a PC
 , tablet, or phone and electronic devices or sensors. A PI2c hat allows the module to be enclosed with
 pluggable connectors. These will become available at some future date. This repo contains the source for
-the Rest service. This will allow you to control and make i2c, spi, pwm, and gpio requests on your PI from
+the REST service. This will allow you to control and make i2c, spi, pwm, and gpio requests on your PI from
 any device including a browser. You can run this on your own PI with the caveat you will
 have to use the pin mapping below as the expected pin numbers are for the Hat.  
 
@@ -23,9 +24,7 @@ for the Raspberry PI. Basically makes the PI act as a serial over network adapte
 
 [PI2c - Serial](https://github.com/gidjituser/pi2c-serial)
 
-### Example
-
-[REST API details](openapi.md "Rest API")
+## Example
 
 Nothing beats a quick example
 
@@ -98,7 +97,10 @@ Instructions which return data can find the value in the InstructionsResponse.
  Specifically the property **returnValue** at the corresponding instruction index of the response.
 Binary data is not valid in REST so it needs to be converted to and from base64 strings.
 
-### Pinout & Wiring
+Full details of the rest API can be found at [REST API details](openapi.md "REST API")
+There is also a OpenAPI 3 file *(openapi.yml)* in the repo.
+
+## Pinout & Wiring
 
 PI2c software uses the pin numbers corresponding with the PI2c hat. If you are not 
 using the hat and are connecting straight to the Pi you can use the 
@@ -156,4 +158,37 @@ on the device and execute later.
   #initialize will be run everytime PI2c starts up
   curl --header "Content-Type: application/json"   --request POST
   --data '[{"func":"mode","arg1": 11, "arg2":"OUTPUT"}]' http://${REST_SERVER}/api/v1/instr/stored/initialize
+```
+
+## Installing and Running
+
+Logs will be generated in a logs folder in the same directory you run the server. If you have any
+issues make sure to check the files inside this directory.
+
+- Install and run globally
+
+```bash
+npm install -g pi2c-rest-api
+REST_PORT=80 pi2c-rest-api
+```
+
+- Build Install and run in repo
+
+```bash
+npm install
+npm run gulp
+REST_PORT=80 node build/index.js
+```
+
+- Run the pre generated release
+
+```bash
+REST_PORT=80 node release/index.js
+```
+
+- To generate a new release folder.
+
+```bash
+npm install
+npm run gulp-release
 ```

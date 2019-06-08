@@ -57,7 +57,6 @@ export default class Api {
   }
   // connect resource routers
   routes(): void {
-    // create an instance of ProduceRouter
     const instructionRouter = new InstructionRouter();
     const generalRouter = new GeneralRouter();
     // attach it to our express app

@@ -7,8 +7,6 @@ exports.default = void 0;
 
 var _express = require("express");
 
-var _save = _interopRequireWildcard(require("../util/save"));
-
 var _parsers = require("../util/parsers");
 
 var _logger = require("../logger");
@@ -18,8 +16,6 @@ var _rpio = _interopRequireDefault(require("rpio"));
 var _InstrHandler = _interopRequireDefault(require("../InstrHandler"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 

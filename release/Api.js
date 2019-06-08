@@ -85,7 +85,6 @@ class Api {
 
 
   routes() {
-    // create an instance of ProduceRouter
     const instructionRouter = new _InstructionRouter.default();
     const generalRouter = new _GeneralRouter.default(); // attach it to our express app
 

@@ -2,7 +2,6 @@
 import type {Instructions, InstructionsResponse, InstructionResponse} from '../types';
 import type { $Request, $Response, NextFunction }  from 'express';
 import { Router }  from 'express';
-import saveInstructions, {genId} from '../util/save';
 import { parseInstructions, parseStoredInstructions, parseOpen, parseMode }
 from '../util/parsers';
 import { logger } from '../logger';
