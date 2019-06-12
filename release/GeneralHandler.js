@@ -44,7 +44,7 @@ class GeneralHandler {
     _mkdirp.default.sync(dbPath);
 
     this.dbGeneralKeyId = `generalConfig`;
-    this.version = process.env.APP_VERSION || packageVersion;
+    this.version = packageVersion;
     this.settings = {
       webURL: "",
       password: "",

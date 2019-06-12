@@ -372,13 +372,13 @@ export function parseI2cSetBaudrate(input: any): [number] | Error {
     return Error(`Invalid instruction format`);
   }
   if(typeof input.arg1 === 'number') {
-    const ret = validInteger(input.arg1, 1000, 400000);
+    const ret = validInteger(input.arg1, 1000, 1000000);
     if(ret instanceof Error) {
       return ret;
     }
     value = ret;
   } else if(typeof input.arg1 === 'string') {
-    const ret = validStringInteger(input.arg1, 1000, 400000);
+    const ret = validStringInteger(input.arg1, 1000, 1000000);
     if(ret instanceof Error) {
       return ret;
     }

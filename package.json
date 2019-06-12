@@ -1,14 +1,16 @@
 {
   "name": "pi2c-rest-api",
-  "version": "0.10.20",
+  "version": "0.10.22",
   "main": "release/index.js",
   "entry": "release/index.js",
-  "bin": {"pi2c-rest-api": "./release/index.js"},
+  "bin": {
+    "pi2c-rest-api": "./release/index.js"
+  },
   "license": "MIT",
   "author": "Chris Page",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/gidjituser/pi2c-rest-api"
+    "type": "git",
+    "url": "https://github.com/gidjituser/pi2c-rest-api"
   },
   "scripts": {
     "debug": "DB_PATH=/tmp/db DEBUG=\"*\" node build/index.js",
@@ -30,10 +32,10 @@
   "dependencies": {
     "basic-auth": "^2.0.1",
     "body-parser": "1.19.0",
-    "core-js": "^3.1.2",
+    "core-js": "^3.1.3",
     "cors": "^2.8.5",
     "debug": "^4.1.1",
-    "express": "4.17.0",
+    "express": "4.17.1",
     "is-base64": "0.1.0",
     "mkdirp": "^0.5.1",
     "morgan": "1.9.1",
@@ -42,7 +44,8 @@
     "rpio": "^1.0.13",
     "tsscmp": "^1.0.6",
     "winston": "^3.2.1",
-    "winston-daily-rotate-file": "^3.9.0"
+    "winston-daily-rotate-file": "^3.9.0",
+    "ws": "^7.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.4.5",
@@ -51,7 +54,7 @@
     "@babel/plugin-transform-flow-strip-types": "^7.4.4",
     "@babel/preset-env": "^7.4.5",
     "@babel/preset-flow": "^7.0.0",
-    "flow-bin": "^0.98.1",
+    "flow-bin": "^0.101.0",
     "flow-typed": "^2.5.2",
     "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",

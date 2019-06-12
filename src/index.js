@@ -3,6 +3,7 @@
 import * as http from 'http';
 import debug from 'debug';
 import Api from './Api';
+import WSInstrServer from './WSInstrServer'
 
 import fs from 'fs';
 
@@ -21,12 +22,10 @@ const DEFAULT_PORT: number = 3000;
 const port: string | number = normalizePort(process.env.REST_PORT);
 // $FlowFixMe: express libdef issue
 const server: http.Server = http.createServer(app.express);
+const wsServer = new WSInstrServer();
+wsServer.setup();
 
 server.listen(port);
-//server.setTimeout(3000, function () {
-  //called if there was a timeout
-
-//});
 server.timeout = 3000;
 
 server.on('error', onError);

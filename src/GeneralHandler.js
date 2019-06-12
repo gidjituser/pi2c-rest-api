@@ -23,7 +23,7 @@ export class GeneralHandler {
     const dbPath = process.env.DB_PATH || '/data/db'
     mkdirp.sync(dbPath);
     this.dbGeneralKeyId = `generalConfig`;
-    this.version = process.env.APP_VERSION || packageVersion;
+    this.version = packageVersion;
     this.settings = {
       webURL: "",
       password: "",

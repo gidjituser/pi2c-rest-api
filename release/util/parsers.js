@@ -532,7 +532,7 @@ function parseI2cSetBaudrate(input) {
   }
 
   if (typeof input.arg1 === 'number') {
-    const ret = validInteger(input.arg1, 1000, 400000);
+    const ret = validInteger(input.arg1, 1000, 1000000);
 
     if (ret instanceof Error) {
       return ret;
@@ -540,7 +540,7 @@ function parseI2cSetBaudrate(input) {
 
     value = ret;
   } else if (typeof input.arg1 === 'string') {
-    const ret = validStringInteger(input.arg1, 1000, 400000);
+    const ret = validStringInteger(input.arg1, 1000, 1000000);
 
     if (ret instanceof Error) {
       return ret;
