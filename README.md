@@ -157,7 +157,7 @@ on the device and execute later.
   #Command line example post new stored instruction set with special name initialize
   #initialize will be run everytime PI2c starts up
   curl --header "Content-Type: application/json"   --request POST
-  --data '[{"func":"mode","arg1": 11, "arg2":"OUTPUT"}]' http://${REST_SERVER}/api/v1/instr/stored/initialize
+  --data '[{"func":"mode","arg1": 3, "arg2":"OUTPUT"}]' http://${REST_SERVER}/api/v1/instr/stored/initialize
 ```
 
 ## Installing and Running

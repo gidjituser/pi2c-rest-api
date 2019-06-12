@@ -19,7 +19,7 @@ module.exports = class WSInstrServer {
     this.wsServer.on('connection', (ws, request) => {
       ws.on('message', (message) => {
 				debug(`WSMESSAGE ${message}`);
-        if (message.type === 'utf8') {
+        if (typeof message === 'string') {
           try {
             const val = JSON.parse(message);
             const received:  boolean = parseInstructions(val);
@@ -43,13 +43,13 @@ module.exports = class WSInstrServer {
           } catch(error) {
             ws.send(JSON.stringify({
               code: 402,
-              message: 'Bad Request. Could not parse instructions. Require array of Instruction stringified'
+              message: `Bad Request. Could not parse instructions. Require array of Instruction stringified. ${error.message}`
             }));
           }
-        } else if (message.type === 'binary') {
+        } else {
             ws.send(JSON.stringify({
               code: 400,
-              message: 'Cannot process binary data'
+              message: `Cannot process data with type ${typeof message}`
             }));
         }
       });
