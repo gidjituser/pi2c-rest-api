@@ -16,7 +16,8 @@ PI2c is a ready to use linux image for a Raspberry Pi that enables it to act as 
 pluggable connectors. These will become available at some future date. This repo contains the source for
 the REST service. This will allow you to control and make i2c, spi, pwm, and gpio requests on your PI from
 any device including a browser. You can run this on your own PI with the caveat you will
-have to use the pin mapping below as the expected pin numbers are for the Hat.  
+have to use the pin mapping below as the expected pin numbers are for the Hat. It also contains a WebSocket
+Server for executing instructions for rapid requests.  
 
 It is intended that your PI is on the same local network or plugged into your computer directly.
 There is a complimentary repo providing the ability for UART over TCP or Websockets
@@ -98,7 +99,45 @@ Instructions which return data can find the value in the InstructionsResponse.
 Binary data is not valid in REST so it needs to be converted to and from base64 strings.
 
 Full details of the rest API can be found at [REST API details](openapi.md "REST API")
-There is also a OpenAPI 3 file *(openapi.yml)* in the repo.
+There is also a OpenAPI 3 file *(openapi.yml)* in the repo. The WebSocket server
+at path **/ws/instr/exec** follows the same protocol as **/api/v1/instr/exec**.
+Send *Instructions* (array of instructions) stringified and receive
+*InstructionsResponse* stringified. Default port is 80. Example below
+
+```html
+<!DOCTYPE HTML>
+<html>
+   <head>
+      <script type = "text/javascript">
+         function PI2cWebSocket() {
+            if ("WebSocket" in window) {
+               var ws = new WebSocket("ws://GO-1234567.local:80/ws/instr/exec");
+               ws.onopen = function() {
+                  var data = JSON.stringify([{"func":"mode","arg1": 3, "arg2":"OUTPUT"}]);
+                  ws.send(data);
+               };
+               ws.onmessage = function (evt) {
+                  var received_msg = evt.data;
+                  //received_msg = "{"success":true,"beginTime":"2019-06-15T15:43:09.121Z","completeTime":"2019-06-15T15:43:09.121Z","instructions":[{"success":true,"index":0}]}"
+                  alert("Instruction Response\n" + received_msg);
+                  var received_object = JSON.parse(received_msg);
+               };
+               ws.onclose = function() {
+                  // Closed
+               };
+            } else {
+               alert("Your browser does not support websockets");
+            }
+         }
+      </script>
+   </head>
+   <body>
+      <div id="pi2c">
+         <a href="javascript:PI2cWebSocket()">Send Instruction to PI2c WebSocket server</a>
+      </div>
+   </body>
+</html>
+```
 
 ## Pinout & Wiring
 

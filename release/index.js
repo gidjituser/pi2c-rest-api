@@ -7,6 +7,8 @@ var _debug = _interopRequireDefault(require("debug"));
 
 var _Api = _interopRequireDefault(require("./Api"));
 
+var _WSInstrServer = _interopRequireDefault(require("./WSInstrServer"));
+
 var _fs = _interopRequireDefault(require("fs"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -19,10 +21,9 @@ const DEFAULT_PORT = 3000;
 const port = normalizePort(process.env.REST_PORT); // $FlowFixMe: express libdef issue
 
 const server = http.createServer(app.express);
-server.listen(port); //server.setTimeout(3000, function () {
-//called if there was a timeout
-//});
-
+const wsServer = new _WSInstrServer.default();
+wsServer.setup(server);
+server.listen(port);
 server.timeout = 3000;
 server.on('error', onError);
 server.on('listening', onListening);

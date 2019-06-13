@@ -1,6 +1,6 @@
 {
   "name": "pi2c-rest-api",
-  "version": "0.10.2t",
+  "version": "0.10.28",
   "main": "release/index.js",
   "entry": "release/index.js",
   "bin": {

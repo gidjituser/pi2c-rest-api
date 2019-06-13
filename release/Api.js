@@ -13,6 +13,8 @@ var _bodyParser = _interopRequireDefault(require("body-parser"));
 
 var _GeneralHandler = _interopRequireDefault(require("./GeneralHandler"));
 
+var _logger = require("./logger");
+
 var _InstructionRouter = _interopRequireDefault(require("./routers/InstructionRouter"));
 
 var _GeneralRouter = _interopRequireDefault(require("./routers/GeneralRouter"));
@@ -51,6 +53,8 @@ class Api {
       //If localhost or link local allow without authorization header (Authorization: Basic <_base64_token_>)
       // <_base64_token_> is username:password in base64 format
       let ip = req.ip;
+
+      _logger.logger.info(`Received request from ${ip}`);
 
       if (req.ip && req.ip.startsWith('::ffff:')) {
         ip = req.ip.substr(7);

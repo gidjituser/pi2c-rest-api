@@ -23,7 +23,7 @@ const port: string | number = normalizePort(process.env.REST_PORT);
 // $FlowFixMe: express libdef issue
 const server: http.Server = http.createServer(app.express);
 const wsServer = new WSInstrServer();
-wsServer.setup();
+wsServer.setup(server);
 
 server.listen(port);
 server.timeout = 3000;

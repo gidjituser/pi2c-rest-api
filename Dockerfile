@@ -29,5 +29,6 @@ ENV DB_PATH '/data/db'
 
 #rest
 EXPOSE 80
+EXPOSE 8080
 
 CMD ["/usr/local/bin/node", "release/index.js"]

@@ -14,9 +14,13 @@ module.exports = class WSInstrServer {
   constructor() {
     this.wsServer = null;
   }
-  setup() {
-    this.wsServer = new WebSocket.Server({ port: process.env.WS_PORT || 8080 });
+  setup(httpServer: http.Server) {
+    //this.wsServer = new WebSocket.Server({ server:  port: process.env.WS_PORT || 8080 });
+    this.wsServer = new WebSocket.Server({ path: "/ws/instr/exec", server: httpServer });
     this.wsServer.on('connection', (ws, request) => {
+      if(request.connection && typeof request.connection.remoteAddress === 'string') {
+        logger.info(`WS Server connection from ${request.connection.remoteAddress}`);
+      }
       ws.on('message', (message) => {
 				debug(`WSMESSAGE ${message}`);
         if (typeof message === 'string') {

@@ -7,6 +7,7 @@ import generalHandler from './GeneralHandler'
 const cors = require('cors');
 const auth = require('basic-auth');
 const compare = require('tsscmp')
+import { logger } from './logger';
 
 
 import InstructionRouter from './routers/InstructionRouter';
@@ -35,6 +36,7 @@ export default class Api {
       //If localhost or link local allow without authorization header (Authorization: Basic <_base64_token_>)
       // <_base64_token_> is username:password in base64 format
       let ip = req.ip;
+      logger.info(`Received request from ${ip}`);
       if (req.ip && req.ip.startsWith('::ffff:')) {
         ip = req.ip.substr(7);
       }
